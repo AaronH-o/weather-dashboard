@@ -1,3 +1,4 @@
+dayjs.extend(window.dayjs_plugin_utc);
 let locationNameInput = document.querySelector('.weather-location');
 let locationTemp = document.querySelector('.weather-temperature');
 let locationTempDescription = document.querySelector('.weather-description');
@@ -12,6 +13,17 @@ let locationLat;
 let locationLon;
 let locationName;
 
+class Weather {
+  constructor(date, temp, wind, humidity, icon) {
+    this.date = date;
+    this.temp = temp;
+    this.wind = wind;
+    this.humidity = humidity;
+    this.icon = icon;
+  }
+}
+
+
 
 
 fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${locationInput}&limit=1&appid=${weatherAPIKey}`)
@@ -25,7 +37,29 @@ fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${locationInput}&limit=1&a
     locationLat = data[0].lat;
     console.log(locationName, locationLon, locationLat);
 
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}`)
+    const weatherList = [];
+
+    // current
+    fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}&units=imperial`)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        // get icon, temp, wind, humidity 
+        console.log(data);
+        let offset = data.timezone/60;
+        // current temp
+        weatherList.push(new Weather(
+          dayjs.utc().utcOffset(offset).format('YYYY-MM-DD'),
+          data.main.temp,
+          data.wind.speed,
+          data.main.humidity,
+          `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+        ));
+      });
+      
+    // future
+    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}&units=imperial`)
       .then(function(response) {
         return response.json();
       })
@@ -35,8 +69,23 @@ fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${locationInput}&limit=1&a
 
         console.log(data);
 
+        for(let i = 0; i < 5; i++) {
+          // get every 8th index starting with the next day
+          let currentIndex = 7+(i*8);
+          let spaceIndex = data.list[currentIndex].dt_txt.indexOf(' ');
+          weatherList.push(new Weather(
+            data.list[currentIndex].dt_txt.substring(0,spaceIndex),
+            // dayjs().format('YYYY-MM-DD'),
+            data.list[currentIndex].main.temp,
+            data.list[currentIndex].wind.speed,
+            data.list[currentIndex].main.humidity,
+            `https://openweathermap.org/img/wn/${data.list[currentIndex].weather[0].icon}@2x.png`
+          ));
+        }
+
+        console.log(weatherList);
       });
 
-  })
+  });
 
 
