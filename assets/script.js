@@ -22,6 +22,13 @@ class Weather {
   }
 }
 
+let cityArray = [];
+
+function populateCityArray() {
+  cityArray = JSON.parse(localStorage.getItem('cityList'));
+  console.log(cityArray);
+}
+
 // retrieve location input and clean it up for api call
 function cleanInput() {
   console.log(locationInput.value);
@@ -29,7 +36,6 @@ function cleanInput() {
 }
 
 function displayCity(cityName) {
-  document.getElementById('city-name').value = '';
   fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${weatherAPIKey}`)
   .then(function(response) {
     return response.json();
@@ -105,7 +111,12 @@ function displayCity(cityName) {
         }
       });
 
-      
+      if(!cityArray.includes(locationInput.value)) {
+        cityArray.push(locationInput.value);
+        localStorage.setItem('cityList', JSON.stringify(cityArray));
+      }
+
+      document.getElementById('city-name').value = '';
   });
 }
 
