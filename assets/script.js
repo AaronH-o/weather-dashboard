@@ -3,7 +3,8 @@ let locationNameInput = document.querySelector('.weather-location');
 
 // clean up locationNameInput and put it into locationInput
 let locationInput = document.querySelector('.location-input');
-let locationBtn = document.querySelector('.location-input-btn')
+let locationBtn = document.querySelector('.location-input-btn');
+let forecastContainer = document.querySelector('.forecast-container');
 
 let id;
 let weatherAPIKey = '88545649ed086e2c55e61d30884046e5';
@@ -28,6 +29,7 @@ function cleanInput() {
 }
 
 function displayCity(cityName) {
+  document.getElementById('city-name').value = '';
   fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${weatherAPIKey}`)
   .then(function(response) {
     return response.json();
@@ -83,19 +85,23 @@ function displayCity(cityName) {
           ));
         }
         console.log(weatherList);
-          // populate cards with weather info
-          for(let i = 0; i < 6; i++) {
+        
+        if(forecastContainer.classList.contains('invisible')) {
+          forecastContainer.classList.remove('invisible')
+        }
+        // populate cards with weather info
+        for(let i = 0; i < 6; i++) {
           let locationTemp = document.querySelector(`.day${i}-temp`);
           let locationIcon = document.querySelector(`.day${i}-icon`);
           let locationDate = document.querySelector(`.day${i}-title`);
           let locationWind = document.querySelector(`.day${i}-wind`);
           let locationHumidity = document.querySelector(`.day${i}-humidity`);
 
-          locationTemp.textContent = weatherList[i].temp;
+          locationTemp.textContent = `Temp: ${weatherList[i].temp}℉`;
           locationIcon.src = weatherList[i].icon;
-          locationDate.textContent = weatherList[i].date;
-          locationWind.textContent = weatherList[i].wind;
-          locationHumidity.textContent = weatherList[i].humidity;
+          locationDate.textContent = `${weatherList[i].date}`;
+          locationWind.textContent = `Wind: ${weatherList[i].wind} MPH`;
+          locationHumidity.textContent = `Humidity: ${weatherList[i].humidity}%`;
         }
       });
 
