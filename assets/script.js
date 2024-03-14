@@ -98,7 +98,7 @@ function displayCity(cityName, input) {
 
         for(let i = 0; i < 5; i++) {
           // get every 8th index starting with the next day
-          let currentIndex = 6+(i*8);
+          let currentIndex = 7+(i*8);
           let spaceIndex = data.list[currentIndex].dt_txt.indexOf(' ');
           let formattedDate = dayjs(data.list[currentIndex].dt_txt.substring(0,spaceIndex)).format('M/D/YYYY')
 
@@ -117,7 +117,7 @@ function displayCity(cityName, input) {
         }
         // populate cards with weather info
         let cityNameEl = document.querySelector('.city-name');
-        cityNameEl.textContent = locationInput.value;
+        cityNameEl.textContent = input;
         for(let i = 0; i < 6; i++) {
           let locationTemp = document.querySelector(`.day${i}-temp`);
           let locationIcon = document.querySelector(`.day${i}-icon`);
