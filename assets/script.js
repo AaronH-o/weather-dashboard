@@ -26,17 +26,19 @@ class Weather {
 let cityArray = [];
 
 function populateCityArray() {
-  cityArray = JSON.parse(localStorage.getItem('cityList'));
-  console.log(cityArray);
+  if(JSON.parse(localStorage.getItem('cityList')) != null ) { 
+    cityArray = JSON.parse(localStorage.getItem('cityList'));
+  }
+  console.log('populate city array',cityArray);
 }
 
-function createList() {
+function createList(input) {
   cityList.innerHTML = '';
-  if(cityArray == null) {
+  if(cityArray.length == 0) {
     return;
   }
   for(let i = 0; i < cityArray.length; i++) {
-    if(cityArray[i] == locationInput.value) {
+    if(cityArray[i] == input) {
       cityList.innerHTML += `<a href="#" class="list-group-item list-group-item-action active">${cityArray[i]}</a>`;
     } else {
       cityList.innerHTML += `<a href="#" class="list-group-item list-group-item-action">${cityArray[i]}</a>`;
@@ -45,15 +47,15 @@ function createList() {
 }
 
 // retrieve location input and clean it up for api call
-function cleanInput() {
-  console.log(locationInput.value);
-  if(locationInput.value.trim() == '') {
+function cleanInput(input) {
+  console.log(input);
+  if(input.trim() == '') {
     return;
   }
-  displayCity(locationInput.value.replace(/\s+/g, '+'));
+  displayCity(input.replace(/\s+/g, '+'), input);
 }
 
-function displayCity(cityName) {
+function displayCity(cityName, input) {
   fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${weatherAPIKey}`)
   .then(function(response) {
     return response.json();
@@ -131,13 +133,13 @@ function displayCity(cityName) {
         }
 
 
-        if(!cityArray.includes(locationInput.value)) {
-          cityArray.push(locationInput.value);
+        if(!cityArray.includes(input)) {
+          cityArray.push(input);
           localStorage.setItem('cityList', JSON.stringify(cityArray));
           populateCityArray();
         }
   
-        createList();
+        createList(input);
   
         document.getElementById('city-name').value = '';
       });   
@@ -146,13 +148,19 @@ function displayCity(cityName) {
 
 populateCityArray();
 createList();
-locationBtn.onclick = cleanInput;
+// locationBtn.onclick = ;
+locationBtn.addEventListener('click', function(event) {
+    console.log(locationInput.value);
+    if(locationInput.value.trim() == '') {
+      return;
+    }
+    displayCity(locationInput.value.replace(/\s+/g, '+'), locationInput.value);
+});
 
 cityList.addEventListener('click', function(event) {
   let element = event.target;
   if(element.matches('.list-group-item') && !element.matches('.active')) {
     console.log(element.innerHTML);
-    // locationInput.value = element.innerHTML;
-    
+    cleanInput(element.innerHTML);
   }
 });
