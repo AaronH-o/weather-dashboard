@@ -5,6 +5,7 @@ let locationNameInput = document.querySelector('.weather-location');
 let locationInput = document.querySelector('.location-input');
 let locationBtn = document.querySelector('.location-input-btn');
 let forecastContainer = document.querySelector('.forecast-container');
+const cityList = document.querySelector('.city-list');
 
 let id;
 let weatherAPIKey = '88545649ed086e2c55e61d30884046e5';
@@ -29,9 +30,26 @@ function populateCityArray() {
   console.log(cityArray);
 }
 
+function createList() {
+  cityList.innerHTML = '';
+  if(cityArray == null) {
+    return;
+  }
+  for(let i = 0; i < cityArray.length; i++) {
+    if(cityArray[i] == locationInput.value) {
+      cityList.innerHTML += `<a href="#" class="list-group-item list-group-item-action active">${cityArray[i]}</a>`;
+    } else {
+      cityList.innerHTML += `<a href="#" class="list-group-item list-group-item-action">${cityArray[i]}</a>`;
+    }
+  }
+}
+
 // retrieve location input and clean it up for api call
 function cleanInput() {
   console.log(locationInput.value);
+  if(locationInput.value.trim() == '') {
+    return;
+  }
   displayCity(locationInput.value.replace(/\s+/g, '+'));
 }
 
@@ -96,6 +114,8 @@ function displayCity(cityName) {
           forecastContainer.classList.remove('invisible')
         }
         // populate cards with weather info
+        let cityNameEl = document.querySelector('.city-name');
+        cityNameEl.textContent = locationInput.value;
         for(let i = 0; i < 6; i++) {
           let locationTemp = document.querySelector(`.day${i}-temp`);
           let locationIcon = document.querySelector(`.day${i}-icon`);
@@ -109,15 +129,30 @@ function displayCity(cityName) {
           locationWind.textContent = `Wind: ${weatherList[i].wind} MPH`;
           locationHumidity.textContent = `Humidity: ${weatherList[i].humidity}%`;
         }
-      });
 
-      if(!cityArray.includes(locationInput.value)) {
-        cityArray.push(locationInput.value);
-        localStorage.setItem('cityList', JSON.stringify(cityArray));
-      }
 
-      document.getElementById('city-name').value = '';
+        if(!cityArray.includes(locationInput.value)) {
+          cityArray.push(locationInput.value);
+          localStorage.setItem('cityList', JSON.stringify(cityArray));
+          populateCityArray();
+        }
+  
+        createList();
+  
+        document.getElementById('city-name').value = '';
+      });   
   });
 }
 
+populateCityArray();
+createList();
 locationBtn.onclick = cleanInput;
+
+cityList.addEventListener('click', function(event) {
+  let element = event.target;
+  if(element.matches('.list-group-item') && !element.matches('.active')) {
+    console.log(element.innerHTML);
+    // locationInput.value = element.innerHTML;
+    
+  }
+});
