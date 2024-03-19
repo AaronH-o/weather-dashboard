@@ -56,7 +56,7 @@ function cleanInput(input) {
 }
 
 function displayCity(cityName, input) {
-  fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${weatherAPIKey}`)
+  fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${weatherAPIKey}`)
   .then(function(response) {
     return response.json();
   })
@@ -68,7 +68,7 @@ function displayCity(cityName, input) {
 
     const weatherList = [];
     // current
-    fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}&units=imperial`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}&units=imperial`)
       .then(function(response) {
         return response.json();
       })
@@ -87,7 +87,7 @@ function displayCity(cityName, input) {
       });
       
     // future
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}&units=imperial`)
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${locationLat}&lon=${locationLon}&appid=${weatherAPIKey}&units=imperial`)
       .then(function(response) {
         return response.json();
       })
